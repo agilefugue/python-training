@@ -1,0 +1,34 @@
+import urllib.request, urllib.parse, urllib.error
+from bs4 import BeautifulSoup
+import ssl
+
+# Ignore SSL certificate errors
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
+
+def get_tag(url):
+    html = urllib.request.urlopen(url.strip(), context=ctx).read()
+    soup = BeautifulSoup(html, 'html.parser')
+    return soup('a')
+
+def parse_tags(tags, distance):
+    index = 0
+    for tag in tags:
+        if index == distance:
+            url = tag.get('href', None)
+            print("Retrieving: " + url)
+            return url
+        index += 1
+
+url = input('Enter - ')
+position = input('Position - ')
+total = input('Times - ')
+t = int(total)
+pos = int(position)-1
+c = 0
+print('Retrieving: ' + url)
+while c < t:
+    tags = get_tag(url)
+    url = parse_tags(tags, pos)
+    c += 1
